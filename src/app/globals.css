@@ -3,6 +3,9 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --color-kesariya: #ff9933; /* saffron */
+  --color-royal-red: #b22222; /* deep red */
+  --color-royal-yellow: #ffd700; /* golden yellow */
 }
 
 @theme inline {
