@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/navbar/Navbar";
+import Footer from "./components/footer/Footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,9 +22,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-         {/* Standard favicon */}
+        {/* Standard favicon */}
         <link rel="icon" href="/assets/icons/favicon.ico" sizes="any" />
-        
+
         {/* PNG favicons */}
         <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png" />
@@ -37,14 +38,16 @@ export default function RootLayout({ children }) {
 
         {/* Optional: manifest.json if you have a PWA */}
         {/* <link rel="manifest" href="/manifest.json" /> */}
-        
+
       </head>
-      <Navbar/>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <Navbar />
         {children}
+        <Footer />
       </body>
+
     </html>
   );
 }
