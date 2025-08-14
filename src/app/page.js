@@ -3,6 +3,7 @@ import HomeComponent from "./components/home/Home";
 import DummyComponent from "./components/dummy/Dummy";
 import InfoPageCompont from "./components/info-page/InfoPageCompont";
 import HostelGalleryComponent from "./components/hostal-gallary/HostelGalleryComponent";
+import Information from "./components/Information/Information";
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
     <HomeComponent/>
     <InfoPageCompont/>
     <HostelGalleryComponent/>
+    <Information/>
     {/* <DummyComponent/> */}
     </>
   )
