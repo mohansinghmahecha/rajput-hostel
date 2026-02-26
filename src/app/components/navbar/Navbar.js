@@ -2,11 +2,12 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeLink, setActiveLink] = useState("/");
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -85,16 +86,19 @@ export default function Header() {
                   <li key={item.label} className="relative">
                     <Link
                       href={item.path}
-                      className="relative px-5 py-3 text-white font-semibold text-sm tracking-wider group transition-all duration-300 hover:text-yellow-200"
-                      onMouseEnter={() => setActiveLink(item.path)}
+                      className={`relative px-5 py-3 font-semibold text-sm tracking-wider group transition-all duration-300 hover:text-yellow-200 ${
+                        pathname === item.path ? "text-yellow-300" : "text-white"
+                      }`}
                     >
                       <span className="relative z-10">{item.label}</span>
-                      
+
                       {/* Subtle Hover Background */}
                       <div className="absolute inset-0 bg-gradient-to-r from-white/5 to-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 ease-out"></div>
-                      
-                      {/* Golden Underline */}
-                      <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-yellow-400 to-orange-400 group-hover:w-4/5 transition-all duration-300 rounded-full"></div>
+
+                      {/* Golden Underline - active ya hover pe show hoga */}
+                      <div className={`absolute bottom-1 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full transition-all duration-300 ${
+                        pathname === item.path ? "w-4/5" : "w-0 group-hover:w-4/5"
+                      }`}></div>
                       
                       {/* Separator Line */}
                       {index < navItems.length - 1 && (
@@ -166,14 +170,20 @@ export default function Header() {
                   key={item.label}
                   href={item.path}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-3 text-white font-semibold rounded-xl hover:bg-white/10 hover:text-yellow-300 transition-all duration-300 transform hover:translate-x-2 group"
+                  className={`block px-4 py-3 font-semibold rounded-xl hover:bg-white/10 hover:text-yellow-300 transition-all duration-300 transform hover:translate-x-2 group ${
+                    pathname === item.path
+                      ? "bg-white/15 text-yellow-300"
+                      : "text-white"
+                  }`}
                   style={{
                     animationDelay: `${index * 100}ms`,
                     animation: mobileMenuOpen ? 'slideInRight 0.5s ease-out forwards' : 'none'
                   }}
                 >
                   <div className="flex items-center space-x-3">
-                    <div className="w-2 h-2 bg-yellow-400 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
+                    <div className={`w-2 h-2 bg-yellow-400 rounded-full transition-opacity ${
+                      pathname === item.path ? "opacity-100" : "opacity-60 group-hover:opacity-100"
+                    }`}></div>
                     <span>{item.label}</span>
                   </div>
                 </Link>
