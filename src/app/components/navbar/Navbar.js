@@ -21,7 +21,6 @@ export default function Header() {
     { label: "HOME", path: "/" },
     { label: "HISTORY", path: "/history" },
     { label: "GALLERY", path: "/gallery" },
-    { label: "CONTACT", path: "/contact" },
     { label: "LOGIN FOR ALUMNI", path: "/login" },
   ];
 

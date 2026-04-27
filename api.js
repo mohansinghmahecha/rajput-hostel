@@ -5,7 +5,7 @@ import axios from "axios";
    AXIOS INSTANCE
 ===================== */
 const API = axios.create({
-  baseURL:  "http://localhost:5000/api",
+  baseURL:  "http://localhost:8000/api",
   headers: {
     "Content-Type": "application/json",
   },
@@ -14,7 +14,7 @@ const API = axios.create({
 /* =====================
    BASE ROUTES
 ===================== */
-const BASEURL = "http://localhost:5000/api"
+const BASEURL = "http://localhost:8000/api"
 const AUTH_BASE = "/auth";
 export const API_ENDPOINTS = {
   AUTH: {

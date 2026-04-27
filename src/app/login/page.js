@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { Box, TextField, Button, Typography, Paper } from "@mui/material";
+import Link from "next/link";
 import toast from "react-hot-toast";
-import { API, API_ENDPOINTS } from "../../../api";
+import API, { API_ENDPOINTS } from "../../../api";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -28,8 +29,11 @@ export default function Login() {
 
       toast.success(res.data.message || "Login successful");
 
-      // TODO: store user / token / redirect
+      // Store user data
       console.log("USER:", res.data.user);
+
+      // Open contact directory in a new tab after login
+      window.open("/contact", "_blank");
 
     } catch (err) {
       toast.error(
@@ -224,9 +228,28 @@ export default function Login() {
           </Box>
 
           <Typography
+            variant="body2"
+            textAlign="center"
+            mt={3}
+            color="text.secondary"
+          >
+            Don&apos;t have an account?{" "}
+            <Link
+              href="/register"
+              style={{
+                color: "#8b0000",
+                fontWeight: 600,
+                textDecoration: "none",
+              }}
+            >
+              Register here
+            </Link>
+          </Typography>
+
+          <Typography
             variant="caption"
             textAlign="center"
-            mt={4}
+            mt={2}
             color="text.secondary"
           >
             © Rajput Chatrwas Alumni

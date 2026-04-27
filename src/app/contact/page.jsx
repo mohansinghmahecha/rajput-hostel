@@ -163,19 +163,40 @@ function formatDob(iso) {
   return `${d}/${m}/${y}`;
 }
 
+const ITEMS_PER_PAGE = 5;
+
+const FIELD_OPTIONS = [
+  "All",
+  ...Array.from(new Set(CONTACTS.map((c) => c.field))).sort(),
+];
+
 export default function ContactPage() {
   const [query, setQuery] = useState("");
+  const [fieldFilter, setFieldFilter] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return CONTACTS;
     return CONTACTS.filter((c) => {
+      const matchesField = fieldFilter === "All" || c.field === fieldFilter;
+      if (!q) return matchesField;
       const hay = `${c.name} ${c.field} ${c.city} ${c.state} ${c.type} ${c.batch}`
         .toLowerCase()
         .trim();
-      return hay.includes(q);
+      return hay.includes(q) && matchesField;
     });
-  }, [query]);
+  }, [query, fieldFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedData = filtered.slice(
+    (safePage - 1) * ITEMS_PER_PAGE,
+    safePage * ITEMS_PER_PAGE
+  );
+
+  // reset page when filters change
+  const handleQuery = (val) => { setQuery(val); setCurrentPage(1); };
+  const handleField = (val) => { setFieldFilter(val); setCurrentPage(1); };
 
   return (
     <>
@@ -226,18 +247,29 @@ export default function ContactPage() {
                 </p>
               </div>
 
-              <div className="flex-1 max-w-xl">
-                <div className="relative">
+              <div className="flex-1 max-w-xl flex gap-3 items-center">
+                <div className="relative flex-1">
                   <input
                     value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search by name, city, field, batch…"
+                    onChange={(e) => handleQuery(e.target.value)}
+                    placeholder="Search by name, city, batch…"
                     className="w-full rounded-full bg-black/40 border border-yellow-500/40 px-4 py-2.5 text-sm text-yellow-50 placeholder:text-yellow-200/60 focus:outline-none focus:ring-2 focus:ring-yellow-400/80 focus:border-yellow-300 shadow-[0_0_0_1px_rgba(0,0,0,0.4)]"
                   />
                   <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-[11px] uppercase tracking-[0.25em] text-yellow-200/70">
                     Search
                   </span>
                 </div>
+                <select
+                  value={fieldFilter}
+                  onChange={(e) => handleField(e.target.value)}
+                  className="rounded-full bg-black/40 border border-yellow-500/40 px-4 py-2.5 text-sm text-yellow-50 focus:outline-none focus:ring-2 focus:ring-yellow-400/80 focus:border-yellow-300 shadow-[0_0_0_1px_rgba(0,0,0,0.4)] appearance-none cursor-pointer"
+                >
+                  {FIELD_OPTIONS.map((f) => (
+                    <option key={f} value={f} className="bg-black text-yellow-50">
+                      {f === "All" ? "All Fields" : f}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
@@ -256,11 +288,10 @@ export default function ContactPage() {
                     <th className="px-4 py-3">City</th>
                     <th className="px-4 py-3">Batch</th>
                     <th className="px-4 py-3">Email</th>
-                    <th className="px-4 py-3">Phone</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map((c, idx) => (
+                  {paginatedData.map((c, idx) => (
                     <tr
                       key={c.id}
                       className={`transition-all duration-150 ${
@@ -304,13 +335,12 @@ export default function ContactPage() {
                         {c.batch}
                       </td>
                       <td className="px-4 py-3 text-yellow-100/85">{c.email}</td>
-                      <td className="px-4 py-3 text-yellow-100/85">{c.phone}</td>
                     </tr>
                   ))}
                   {filtered.length === 0 && (
                     <tr>
                       <td
-                        colSpan={9}
+                        colSpan={8}
                         className="px-4 py-8 text-center text-sm text-yellow-200/70"
                       >
                         No contacts found for this search. Try a different name,
@@ -322,12 +352,41 @@ export default function ContactPage() {
               </table>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-4 sm:px-6 py-3 border-t border-yellow-500/30 text-[11px] text-yellow-200/80">
-              <span>
-                Tip: Search using Hindi or English keywords like city, batch or
-                profession.
+            {/* Pagination */}
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-3 px-4 sm:px-6 py-3 border-t border-yellow-500/30">
+              <span className="text-[11px] text-yellow-200/80">
+                Page {safePage} of {totalPages} ({filtered.length} results)
               </span>
-              <span>© Rajput Chatrwas Alumni</span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={safePage <= 1}
+                  className="px-3 py-1.5 rounded-full text-xs font-semibold border border-yellow-500/40 bg-black/40 text-yellow-100 hover:bg-red-900/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  ← Prev
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`w-8 h-8 rounded-full text-xs font-semibold transition-colors ${
+                      page === safePage
+                        ? "bg-yellow-500/90 text-black border border-yellow-400"
+                        : "bg-black/40 text-yellow-100 border border-yellow-500/40 hover:bg-red-900/50"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={safePage >= totalPages}
+                  className="px-3 py-1.5 rounded-full text-xs font-semibold border border-yellow-500/40 bg-black/40 text-yellow-100 hover:bg-red-900/50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next →
+                </button>
+              </div>
+              <span className="text-[11px] text-yellow-200/80">© Rajput Chatrwas Alumni</span>
             </div>
           </div>
         </div>
